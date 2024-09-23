@@ -1,10 +1,14 @@
-import AddDocumentButton from "@/components/AddDocumentButton";
+import AddDocumentBtn from "@/components/AddDocumentBtn";
 import Header from "@/components/Header";
 import { SignedIn, UserButton } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 import React from "react";
 
-const Home = () => {
+const Home = async () => {
+  const clerkUser = await currentUser();
+  if (!clerkUser) redirect("sign-in");
   const documents = [];
 
   return (
@@ -21,8 +25,17 @@ const Home = () => {
         <div>zx</div>
       ) : (
         <div className="document-list-empty">
-          <Image src="/assets/icons/doc.svg" alt="Document" height={40} width={40} className="mx-auto"/>
-          <AddDocumentButton/>
+          <Image
+            src="/assets/icons/doc.svg"
+            alt="Document"
+            height={40}
+            width={40}
+            className="mx-auto"
+          />
+          <AddDocumentBtn
+            userId={clerkUser.id}
+            email={clerkUser.emailAddresses[0].emailAddress}
+          />
         </div>
       )}
     </main>
